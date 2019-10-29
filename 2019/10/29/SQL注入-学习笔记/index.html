@@ -15,10 +15,8 @@
 <meta property="og:site_name" content="fl4g">
 <meta property="og:description" content="原理将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。假设我们在浏览器中输入URL www.abc.com?id=1 时，我们在URL中传递变量id，并且提供值为1，由于它是对数据库进行动态查询的请求（其中?id＝1表示数据库查询变量），所以我们可以该URL中嵌入恶意SQL语句。   造成SQL注入漏洞原因有两个 ：  没有对输入的数据进行过滤">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="d:%5CBlog%5Chexo%5Cpublic%5Cimg%5C1.png">
-<meta property="og:updated_time" content="2019-10-29T12:02:09.795Z">
+<meta property="og:updated_time" content="2019-10-29T12:05:32.527Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:%5CBlog%5Chexo%5Cpublic%5Cimg%5C1.png">
   
     <link rel="alternative" href="/atom.xml" title="fl4g" type="application/atom+xml">
   
@@ -181,11 +179,16 @@
 <li>没有对发送到数据的数据进行转义（转义输出）  </li>
 </ul>
 <h1 id="判断是否存在注入"><a href="#判断是否存在注入" class="headerlink" title="判断是否存在注入"></a>判断是否存在注入</h1><ul>
-<li><code>&#39;#</code> –&gt; 报错，返回数据库错误<br><img src="D:%5CBlog%5Chexo%5Cpublic%5Cimg%5C1.png" alt="图片"></li>
-<li><code>&#39; or 1=1#</code> –&gt; 永真条件，返回所有记录</li>
-<li><code>&#39; and 1=2#</code> –&gt; 永假条件，不返回记录  </li>
-<li><code>&#39; or &#39;1&#39;=&#39;1</code></li>
-<li><code>&#39;and &#39;1&#39;=&#39;2</code><br>（有时候单引号不行可以试试双引号）</li>
+<li><p><code>&#39;#</code> –&gt; 报错，返回数据库错误</p>
+</li>
+<li><p><code>&#39; or 1=1#</code> –&gt; 永真条件，返回所有记录</p>
+</li>
+<li><p><code>&#39; and 1=2#</code> –&gt; 永假条件，不返回记录  </p>
+</li>
+<li><p><code>&#39; or &#39;1&#39;=&#39;1</code></p>
+</li>
+<li><p><code>&#39;and &#39;1&#39;=&#39;2</code><br>（有时候单引号不行可以试试双引号）</p>
+</li>
 </ul>
 <h1 id="利用-information-schema"><a href="#利用-information-schema" class="headerlink" title="利用 information_schema"></a>利用 information_schema</h1><p>information_schema 是 MySQL 中的一个默认数据库，里面存放了其他所有数据库的信息。</p>
 <h2 id="判断列数"><a href="#判断列数" class="headerlink" title="判断列数"></a>判断列数</h2><p><code>&#39; order by 1#</code> ， <code>&#39; order by 2#</code> 如果列数不存在的话会报错，可以用二分法查询。</p>
